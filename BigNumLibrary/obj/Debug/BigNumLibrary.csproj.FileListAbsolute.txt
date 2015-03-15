@@ -1,5 +1,0 @@
-D:\Classes\CS 498\BigNumLibrary\BigNumLibrary\bin\Debug\BigNumLibrary.dll
-D:\Classes\CS 498\BigNumLibrary\BigNumLibrary\bin\Debug\BigNumLibrary.pdb
-D:\Classes\CS 498\BigNumLibrary\BigNumLibrary\obj\Debug\BigNumLibrary.csprojResolveAssemblyReference.cache
-D:\Classes\CS 498\BigNumLibrary\BigNumLibrary\obj\Debug\BigNumLibrary.dll
-D:\Classes\CS 498\BigNumLibrary\BigNumLibrary\obj\Debug\BigNumLibrary.pdb
