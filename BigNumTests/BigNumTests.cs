@@ -450,7 +450,7 @@ namespace BigNumTests
             var n1 = new BigNumber("5500000000");
             var n2 = new BigNumber("5500000000");
             var num = n1 * n2;
-            var expected = new int[2];
+            var expected = new int[3];
             expected[0] = 30;
             expected[1] = 250000000;
             expected[2] = 0;
@@ -501,7 +501,7 @@ namespace BigNumTests
         {
             var n1 = new BigNumber("-5500000000");
             var n2 = new BigNumber("5500000000");
-            var num = n1 + n2;
+            var num = n1 * n2;
             var expected = new int[3];
             expected[0] = 30;
             expected[1] = 250000000;
@@ -517,7 +517,7 @@ namespace BigNumTests
             var n2 = new BigNumber("100000000000000000");
             var num = n1 * n2;
             var expected = new int[3];
-            expected[0] = 100000000;
+            expected[0] = 10000000;
             expected[1] = 0;
             expected[2] = 0;
             CollectionAssert.AreEqual(expected, num.NumData);

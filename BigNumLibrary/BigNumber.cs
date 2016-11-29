@@ -155,24 +155,35 @@ namespace BigNumLibrary
 
         public static BigNumber operator *(BigNumber n1, BigNumber n2)
         {
-            var product = new BigNumber
-            {
-                NumData = new int[DetermineMaxArraySize(n1.NumData, n2.NumData, OperationTypes.Multiplication)],
-                Positive = DetermineSign(n1, n2, OperationTypes.Multiplication)
-            };
+            var product = new BigNumber();
+            var intermediateProducts = new BigNumber[n2.NumData.Length];
+            int carry;
 
-            var carry = 0;
-            for (var i = n1.NumData.Length - 1; i > -1; i--)
+            for (var i = n2.NumData.Length-1; i > -1; i--)
             {
-                var factor1 = n1.NumData[i];
-                for (var j = n2.NumData.Length - 1; j > -1; j--)
+                carry = 0;
+                var intermediateProduct = new BigNumber
                 {
-                    var factor2 = n2.NumData[j];
-                    var tempResult = factor1 * factor2 + carry;
-                    product.NumData[i] = product.NumData[i*j + j] + tempResult % UpperLimitPerBlock;
-                    carry = tempResult / UpperLimitPerBlock;
+                    NumData = new int[DetermineMaxArraySize(n1.NumData, n2.NumData, OperationTypes.Multiplication) + n2.NumData.Length - i],
+                    Positive = true
+                };
+                long factor1 = (long) n2.NumData[i];
+                for (var j = n1.NumData.Length -1; j > -1; j--)
+                {
+                    long factor2 = (long) n1.NumData[j];
+                    long tempResult = factor1 * factor2 + carry;
+                    intermediateProduct.NumData[j+1] = (int) (tempResult % UpperLimitPerBlock);
+                    carry = (int) (tempResult / UpperLimitPerBlock);
                 } 
+                intermediateProduct.NumData[0] = carry;
+                intermediateProducts[i] = intermediateProduct;
             }
+            foreach (var num in intermediateProducts) 
+            {
+                product += num;
+            }
+            CondenseNumData(product);
+            product.Positive = DetermineSign(n1, n2, OperationTypes.Multiplication);
             return product;
         }
 
@@ -207,11 +218,9 @@ namespace BigNumLibrary
             switch (type)
             {
                 case OperationTypes.Addition:
-                    var length1 = numData1.Count;
-                    var length2 = numData2.Count;
-                    var larger = length1 > length2 
-                        ? length1 
-                        : length2;
+                    var larger = numData1.Count > numData2.Count 
+                        ? numData1.Count
+                        : numData2.Count;
                     if (numData1[0] + numData2[0] > UpperLimitPerBlock-1)
                     {
                         return larger + 1;
@@ -222,9 +231,7 @@ namespace BigNumLibrary
                         ? numData1.Count
                         : numData2.Count);
                 case OperationTypes.Multiplication:
-                    return ((long) numData1[0]*(long) numData2[0] > UpperLimitPerBlock)
-                        ? numData1.Count + numData2.Count
-                        : numData1.Count + numData2.Count - 1;
+                    return numData1.Count;
                 case OperationTypes.Division:
                     return 1;
                 default:
@@ -269,6 +276,25 @@ namespace BigNumLibrary
                 carry = tempResult / UpperLimitPerBlock;
             }
             return sum;
+        }
+
+        private static void CondenseNumData(BigNumber num)
+        {
+            int remove = 0;
+            for (int i = 0; i < num.NumData.Length; i++)
+            {
+                if (num.NumData[i] != 0) 
+                {
+                    break;
+                }
+                remove++;
+            }
+            int[] newNumData = new int[num.NumData.Length-remove];
+            for (int i = 0; i < newNumData.Length; i++)
+            {
+                newNumData[i] = num.NumData[i+remove];
+            }
+            num.NumData = newNumData;
         }
     }
 }
