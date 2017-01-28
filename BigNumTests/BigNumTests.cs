@@ -622,5 +622,94 @@ namespace BigNumTests
             Assert.IsTrue(num.Positive);
         }
         #endregion
+
+        #region
+        [TestMethod]
+        public void Division_TwoSmallPositiveNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber(10);
+            var n2 = new BigNumber(2);
+            var num = n1 / n2;
+            var expected = new int[1];
+            expected[0] = 5;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_TwoLargePositiveNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber("100000000000000000000");
+            var n2 = new BigNumber("10000000000");
+            var num = n1 / n2;
+            var expected = new int[2];
+            expected[0] = 1;
+            expected[1] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_TwoSmallNegativeNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber(-10);
+            var n2 = new BigNumber(-2);
+            var num = n1 / n2;
+            var expected = new int[1];
+            expected[0] = 5;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_TwoLargeNegativeNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber("-100000000000000000000");
+            var n2 = new BigNumber("-10000000000");
+            var num = n1 / n2;
+            var expected = new int[2];
+            expected[0] = 1;
+            expected[1] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_TwoSmallDifferentSignNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber(-0);
+            var n2 = new BigNumber(2);
+            var num = n1 / n2;
+            var expected = new int[1];
+            expected[0] = 5;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsFalse(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_TwoLargeDifferentSignNumbers_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber("-100000000000000000000");
+            var n2 = new BigNumber("10000000000");
+            var num = n1 / n2;
+            var expected = new int[2];
+            expected[0] = 1;
+            expected[1] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsFalse(num.Positive);
+        }
+
+        [TestMethod]
+        public void Division_DivisorLargerThanDividend_ReturnsCorrectResult()
+        {
+            var n1 = new BigNumber("100000000");
+            var n2 = new BigNumber("100000000000000000");
+            var num = n1 / n2;
+            var expected = new int[1];
+            expected[0] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+        #endregion
     }
 }  

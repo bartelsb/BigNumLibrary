@@ -113,10 +113,7 @@ namespace BigNumLibrary
             {
                 hash = hash * 23 + this.NumData.GetHashCode();
             }
-            if (this.Positive != null)
-            {
-                hash = hash * 23 + this.Positive.GetHashCode();
-            }
+            hash = hash * 23 + this.Positive.GetHashCode();
             return hash;
         }
 
@@ -249,11 +246,22 @@ namespace BigNumLibrary
 
         public static BigNumber operator /(BigNumber n1, BigNumber n2)
         {
-            return new BigNumber
-            {
-                NumData =  new int[DetermineMaxArraySize(n1.NumData, n2.NumData, OperationTypes.Division)],
-                Positive = DetermineSign(n1, n2, OperationTypes.Division)
-            };
+            if (n2 == new BigNumber()) { throw new DivideByZeroException(); }
+            if (n2 > n1) { return new BigNumber(); }
+            var finalSign = DetermineSign(n1, n2, OperationTypes.Division);
+            n1.Positive = true;
+            n2.Positive = true;
+
+            var intermediateNumber = n2;
+            var count = new BigNumber();
+            while (intermediateNumber <= n1) {
+                intermediateNumber += n2;
+                count++;
+            }
+
+            CondenseNumData(count);
+            count.Positive = finalSign;
+            return count;
         }
 
         public static BigNumber operator !(BigNumber n1)
@@ -298,7 +306,7 @@ namespace BigNumLibrary
                 case OperationTypes.Multiplication:
                     return numData1.Count;
                 case OperationTypes.Division:
-                    return 1;
+                    return numData1.Count - numData2.Count + 1;
                 default:
                     throw new InvalidEnumArgumentException("Unimplemented operation attempted.");
             }
