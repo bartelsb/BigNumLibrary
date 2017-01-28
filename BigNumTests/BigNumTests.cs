@@ -243,6 +243,55 @@ namespace BigNumTests
         }
         #endregion
 
+        #region Increment Tests
+        [TestMethod]
+        public void Increment_SmallNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("10");
+            num++;
+            var expected = new int[1];
+            expected[0] = 11;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Increment_BigNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("999999999999999999");
+            num++;
+            var expected = new int[3];
+            expected[0] = 1;
+            expected[1] = 0;
+            expected[2] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Increment_NegativeNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("-1000000000");
+            num++;
+            var expected = new int[1];
+            expected[0] = 999999999;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsFalse(num.Positive);
+        }
+
+        [TestMethod]
+        public void Increment_NegativeNumberToPositiveNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("-1");
+            var expected = new int[1];
+            num++;
+            num++;
+            expected[0] = 1;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+        #endregion
+
         #region Subtraction Tests
         [TestMethod]
         public void Subtraction_TwoSmallPositiveNumbers_ReturnsCorrectResult()
@@ -328,6 +377,55 @@ namespace BigNumTests
             var expected = new int[2];
             expected[0] = 999999990;
             expected[1] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsFalse(num.Positive);
+        }
+        #endregion
+
+        #region Decrement Tests
+        [TestMethod]
+        public void Decrement_SmallNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("10");
+            num--;
+            var expected = new int[1];
+            expected[0] = 9;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Decrement_BigNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("1000000000000000000");
+            num--;
+            var expected = new int[2];
+            expected[0] = 999999999;
+            expected[1] = 999999999;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsTrue(num.Positive);
+        }
+
+        [TestMethod]
+        public void Decrement_NegativeNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("-999999999");
+            num--;
+            var expected = new int[2];
+            expected[0] = 1;
+            expected[1] = 0;
+            CollectionAssert.AreEqual(expected, num.NumData);
+            Assert.IsFalse(num.Positive);
+        }
+
+        [TestMethod]
+        public void Decrement_PositiveNumberToNegativeNumber_HasCorrectResult()
+        {
+            var num = new BigNumber("1");
+            var expected = new int[1];
+            num--;
+            num--;
+            expected[0] = 1;
             CollectionAssert.AreEqual(expected, num.NumData);
             Assert.IsFalse(num.Positive);
         }

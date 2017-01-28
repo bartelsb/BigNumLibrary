@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BigNumLibrary
 {
-    public class BigNumber
+    public class BigNumber : IComparable<BigNumber>
     {
         private const int UpperLimitPerBlock = 1000000000;
         private const int MaxDigits = 9;
@@ -81,6 +81,52 @@ namespace BigNumLibrary
             return !(n1 > n2);
         }
 
+        public static bool operator ==(BigNumber n1, BigNumber n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return (Enumerable.SequenceEqual(n1.NumData, n2.NumData)) && (n1.Positive == n2.Positive);
+        }
+
+        public static bool operator!= (BigNumber n1, BigNumber n2)
+        {
+            return !n1.Equals(n2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) { return false; }
+            if (this.GetType() != obj.GetType()) { return false; }
+            return Equals((BigNumber)obj);
+        }
+
+        public bool Equals(BigNumber obj)
+        {
+            return this == obj;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            if (this.NumData != null)
+            {
+                hash = hash * 23 + this.NumData.GetHashCode();
+            }
+            if (this.Positive != null)
+            {
+                hash = hash * 23 + this.Positive.GetHashCode();
+            }
+            return hash;
+        }
+
+        public int CompareTo(BigNumber obj)
+        {
+            if (this > obj) return -1;
+            if (this == obj) return 0;
+            return 1;
+        }
+
         public static BigNumber operator +(BigNumber n1, BigNumber n2)
         {
             if (n1.Positive && !n2.Positive)
@@ -104,6 +150,7 @@ namespace BigNumLibrary
 
         public static BigNumber operator -(BigNumber n1, BigNumber n2)
         {
+            // Rearrange if possible to make use of addition code
             if (n1.Positive && !n2.Positive)
             {
                 n2.Positive = true;
@@ -121,26 +168,28 @@ namespace BigNumLibrary
                 Positive = DetermineSign(n1, n2, OperationTypes.Subtraction)
             };
 
+            // Choose subtrahend to be the most positive number
             var subtrahend = (n1 > n2) && n1.Positive || (n1 < n2) && !n1.Positive 
                 ? n1 
                 : n2;
             var minuend = (n1 == subtrahend) 
                 ? n2 
                 : n1;
+
             var carry = 0;
             for (var i = difference.NumData.Length - 1; i > -1; i--)
             {
                 var tempSubtrahend = 0;
                 var tempMinuend = 0;
-                if (i - (difference.NumData.Length - n1.NumData.Length) > -1)
+                if (i - (difference.NumData.Length - subtrahend.NumData.Length) > -1)
                 {
-                    tempSubtrahend = subtrahend.NumData[i - (difference.NumData.Length - n1.NumData.Length)];
+                    tempSubtrahend = subtrahend.NumData[i - (difference.NumData.Length - subtrahend.NumData.Length)];
                 }
-                if (i - (difference.NumData.Length - n2.NumData.Length) > -1)
+                if (i - (difference.NumData.Length - minuend.NumData.Length) > -1)
                 {
-                    tempMinuend = minuend.NumData[i - (difference.NumData.Length - n2.NumData.Length)];
+                    tempMinuend = minuend.NumData[i - (difference.NumData.Length - minuend.NumData.Length)];
                 }
-                var tempResult = tempSubtrahend - tempMinuend - carry;
+                var tempResult = tempSubtrahend - tempMinuend + carry;
                 carry = tempResult < 0 
                     ? -1 
                     : 0;
@@ -150,6 +199,7 @@ namespace BigNumLibrary
                 
                 difference.NumData[i] = tempResult;
             }
+            CondenseNumData(difference); // has to be called for the edge case of 1000000000-1
             return difference;
         }
 
@@ -270,6 +320,12 @@ namespace BigNumLibrary
             }
         }
 
+        /// <summary>
+        /// Once an addition or subtraction problem has been converted into 
+        /// </summary>
+        /// <param name="n1Data"></param>
+        /// <param name="n2Data"></param>
+        /// <returns></returns>
         private static int[] PerformUnsignedAdd(int[] n1Data, int[] n2Data)
         {
             var sum = new int[DetermineMaxArraySize(n1Data, n2Data, OperationTypes.Addition)];
@@ -299,6 +355,7 @@ namespace BigNumLibrary
         /// <param name="num"></param>
         private static void CondenseNumData(BigNumber num)
         {
+            if (num.NumData.Length == 1) { return; }
             int remove = 0;
             for (int i = 0; i < num.NumData.Length; i++)
             {
