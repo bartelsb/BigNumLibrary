@@ -153,6 +153,16 @@ namespace BigNumLibrary
             return difference;
         }
 
+        public static BigNumber operator ++(BigNumber n1)
+        {
+            return n1 + new BigNumber(1);
+        }
+
+        public static BigNumber operator --(BigNumber n1)
+        {
+            return n1 - new BigNumber(1);
+        }
+
         public static BigNumber operator *(BigNumber n1, BigNumber n2)
         {
             var product = new BigNumber();
@@ -198,7 +208,12 @@ namespace BigNumLibrary
 
         public static BigNumber operator !(BigNumber n1)
         {
-            return new BigNumber();
+            BigNumber product = n1;
+            for (BigNumber i = n1 - new BigNumber(1); i > new BigNumber(); i--)
+            {
+                product = product * i;
+            }
+            return product;
         }
 
         public override string ToString()
@@ -278,6 +293,10 @@ namespace BigNumLibrary
             return sum;
         }
 
+        /// <summary>
+        /// Removes extra array spots that only contain zeros
+        /// </summary>
+        /// <param name="num"></param>
         private static void CondenseNumData(BigNumber num)
         {
             int remove = 0;
