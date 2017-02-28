@@ -677,7 +677,7 @@ namespace BigNumTests
         [TestMethod]
         public void Division_TwoSmallDifferentSignNumbers_ReturnsCorrectResult()
         {
-            var n1 = new BigNumber(-0);
+            var n1 = new BigNumber(-10);
             var n2 = new BigNumber(2);
             var num = n1 / n2;
             var expected = new int[1];
