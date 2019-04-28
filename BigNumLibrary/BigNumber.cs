@@ -252,14 +252,31 @@ namespace BigNumLibrary
             n1.Positive = true;
             n2.Positive = true;
 
-            var intermediateNumber = n2;
+            index = 0;
+            initialNum = new BigNumber(n1.NumData[index]);
+            while (index < n1.NumData.Length) {
+                if (initialNum < n2) {
+                    index++;
+                    initialNum *= UpperLimitPerBlock;
+                    initialNum.NumData[initialNum.NumData.Length-1] = n1.NumData[index];
+                } else {
+                    // multiply n2 until we get the count, subtract the difference, start over
+                    var intermediateNumber = n2;
+                    while (intermediateNumber <= initialNum) {
+                        intermediateNumber += n2;
+                        count++;
+                    }
+                }
+            }
+
+            /* var intermediateNumber = n2;
             var count = new BigNumber();
             while (intermediateNumber <= n1) {
                 intermediateNumber += n2;
                 count++;
             }
 
-            CondenseNumData(count);
+            CondenseNumData(count); */
             count.Positive = finalSign;
             return count;
         }
